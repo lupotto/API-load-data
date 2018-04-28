@@ -3,7 +3,7 @@ import skimage
 import skimage.io as io
 import io
 from io import BytesIO
-# from lxml import etree
+import matplotlib.pyplot as plt
 import sys
 import xml.etree.ElementTree as ET
 import re
@@ -11,6 +11,8 @@ import os
 from os.path import isfile
 import cv2
 import pickle
+import pandas
+from collections import Counter
 
 
 DATA_LOCATION = 'resources'
@@ -97,29 +99,51 @@ def loadDataset(DATA_LOCATION):
                         classes.append(Object(name, xmin, ymin, xmax, ymax))
 
                     if jpg_folder == xml_folder and jpg_img == xml_img:
-                        img = Image(jpg_folder, jpg_img, data, classes)
 
+                        img = Image(jpg_folder, jpg_img, data, classes)
                         count_classes_areas(img,areas,times)
 
-                    # new_img = printBoundingBoxes(img)
-                    # print(os.path.join(out_path, folder, subfolder, img.idFolder +"_"+ img.numImg + ".jpg"),
-                    # new_img)
-                    # cv2.imwrite(os.path.join(out_path, folder, subfolder, img.idFolder+"_"+img.numImg+".jpg"),new_img)
+                        new_img = printBoundingBoxes(img)
+
+                        #print(os.path.join(out_path, folder, subfolder, img.idFolder +"_"+ img.numImg + ".jpg"),
+                        #   new_img)
+                        #cv2.imwrite(os.path.join(out_path, folder, subfolder, img.idFolder+"_"+img.numImg+".jpg"),new_img)
+
+    #createDicts(areas,times)
+
+def createHistogram():
+
+    with open("areas.txt", "rb") as myFile:
+        areas = pickle.load(myFile)
+
+    with open("times.txt", "rb") as myFile:
+        times = pickle.load(myFile)
+
+    areas.pop('200',None)
+    times.pop('200',None)
+
+    
+
+    names = list(areas.keys())
+    pixel_values = list(areas.values())
+    times_values = list(times.values())
+
+    fig, axs = plt.subplots(1,2 , figsize=(9, 4))
+
+    total = pixel_values/times_values
+    axs[0].bar(names, total)
+    axs[1].bar(names,times_values)
+    axs[0].set_title('Pixels')
+    axs[1].set_title('Times')
+    plt.savefig('Class stadistics')
+    plt.show()
+
+def createDicts(areas,times):
 
     with open("areas.txt", "wb") as f:
         pickle.dump(areas, f)
     with open("times.txt","wb") as f:
         pickle.dump(times,f)
-
-
-    #with open("areas.txt", "rb") as myFile:
-     #   gas = pickle.load(myFile)
-
-   # with open("times.txt", "rb") as myFile:
-    #    gas2 = pickle.load(myFile)
-
-
-
 
 def count_classes_areas(image,areas,times):
 
@@ -131,8 +155,6 @@ def count_classes_areas(image,areas,times):
         else:
             areas[image.classes[i].name] = image.classes[i].getArea()
             times[image.classes[i].name] = 1
-
-
 
 def printBoundingBoxes(image):
     font = cv2.FONT_HERSHEY_TRIPLEX
@@ -162,7 +184,6 @@ def printBoundingBoxes(image):
 
     return newimg
 
-
 def setColor(name):
     font_color = (0, 0, 0)
     if name == 'Car':
@@ -185,4 +206,7 @@ def setColor(name):
 
 
 if __name__ == '__main__':
-    loadDataset('resources')
+
+
+    #loadDataset('resources')
+    createHistogram()
