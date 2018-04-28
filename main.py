@@ -10,9 +10,11 @@ import re
 import os
 from os.path import isfile
 import cv2
+import pickle
 
 
 DATA_LOCATION = 'resources'
+
 
 
 class Object(object):
@@ -23,9 +25,17 @@ class Object(object):
         self.xmax = xmax
         self.ymax = ymax
 
-    def bbox_area(self):
+    def getArea(self):
         return (self.xmax - self.xmin) * (self.ymax - self.ymin)
 
+    def showDimensions(self):
+        difX = self.xmax-self.xmin
+        difY = self.ymax - self.ymin
+
+        print("Id: {}".format(self.name))
+        print("Xmax: {} Xmin: {} Xmax - Xmin: {}".format(self.xmax,self.xmin,self.xmax-self.xmin))
+        print("Ymax: {} Ymin: {} Ymax - Ymin: {}".format(self.ymax, self.ymin, self.ymax - self.ymin))
+        print("Area: {}".format(difX*difY))
 
 class Image(object):
     def __init__(self, idFolder, numImg, data, classes):
@@ -35,21 +45,28 @@ class Image(object):
         self.classes = classes
 
 
+
 def loadDataset(DATA_LOCATION):
     main_path = os.path.join(os.path.expanduser('~'), DATA_LOCATION, 'AutelData')
     out_path = os.path.join(os.path.expanduser('~'),'outAutelData')
+    #os.makedirs(out_path)
 
     main_folders = [f for f in os.listdir(main_path) if not isfile(os.path.join(main_path, f))]
 
-    #os.makedirs(out_path)
+    #stadistics dicts
+    areas = {}
+    times = {}
 
+    test = 0
     # 1st level  #FOLDER IS 1ST BRANCH
     for folder in main_folders:
         #os.makedirs(os.path.join(out_path,folder))
+
         folders_1 = os.listdir(os.path.join(main_path, folder))
 
         for subfolder in folders_1:
             #os.makedirs(os.path.join(out_path, folder,subfolder))
+
             files = os.listdir(os.path.join(main_path, folder, subfolder))
             files.sort()
 
@@ -66,9 +83,7 @@ def loadDataset(DATA_LOCATION):
                     xml_img = re.split('[_.]', id)[1]
 
                     tree = ET.parse(os.path.join(main_path, folder, subfolder, id))
-                    # tree = ET.parse('/home/alupotto/resources/AutelData/Set3/MB0013/MB0013_000297.xml')
                     root = tree.getroot()
-
                     objects = root.findall('object')
 
                     classes = []
@@ -84,21 +99,47 @@ def loadDataset(DATA_LOCATION):
                     if jpg_folder == xml_folder and jpg_img == xml_img:
                         img = Image(jpg_folder, jpg_img, data, classes)
 
+                        count_classes_areas(img,areas,times)
+
+                    # new_img = printBoundingBoxes(img)
+                    # print(os.path.join(out_path, folder, subfolder, img.idFolder +"_"+ img.numImg + ".jpg"),
+                    # new_img)
+                    # cv2.imwrite(os.path.join(out_path, folder, subfolder, img.idFolder+"_"+img.numImg+".jpg"),new_img)
+
+    with open("areas.txt", "wb") as f:
+        pickle.dump(areas, f)
+    with open("times.txt","wb") as f:
+        pickle.dump(times,f)
 
 
-                        print(os.path.join(main_path, folder, subfolder, id))
-                        new_img = printBoundingBoxes(img)
+    #with open("areas.txt", "rb") as myFile:
+     #   gas = pickle.load(myFile)
 
-                        #print(os.path.join(out_path, folder, subfolder, img.idFolder +"_"+ img.numImg + ".jpg"),
-                                   #new_img)
-                        #cv2.imwrite(os.path.join(out_path, folder, subfolder, img.idFolder+"_"+img.numImg+".jpg"),new_img)
+   # with open("times.txt", "rb") as myFile:
+    #    gas2 = pickle.load(myFile)
+
+
+
+
+def count_classes_areas(image,areas,times):
+
+    for i in (range(len(image.classes))):
+
+        if image.classes[i].name in areas:
+            areas[image.classes[i].name] += image.classes[i].getArea()
+            times[image.classes[i].name] += 1
+        else:
+            areas[image.classes[i].name] = image.classes[i].getArea()
+            times[image.classes[i].name] = 1
+
+
 
 def printBoundingBoxes(image):
     font = cv2.FONT_HERSHEY_TRIPLEX
     fontScale = 0.75
     newimg = 0
     lineType = 1
-
+    area = 0
     for i in (range(len(image.classes))):
         font_color = setColor(image.classes[i].name)
         bbox = cv2.rectangle(image.data, (image.classes[i].xmin, image.classes[i].ymin),
@@ -107,10 +148,10 @@ def printBoundingBoxes(image):
         newimg = cv2.putText(bbox, image.classes[i].name, (image.classes[i].xmin - 5, image.classes[i].ymin - 5), font,
                              fontScale, font_color, lineType)
 
-        #image.classes[i]
-    # bbox = cv2.rectangle(image.data, (image.classes[0].xmin,image.classes[0].ymin),(image.classes[0].xmax,image.classes[0].ymax),(0,255,0),2)
-    # newimg = cv2.putText(bbox,image.classes[0].name,(image.classes[0].xmin - 5 ,image.classes[0].ymin - 5 ),font,fontScale,font_color,lineType)
 
+        #print("Num {} {}: Area: {}".format(image.classes[i].name,i,area))
+
+   # print(area)
     cv2.imshow('draw', newimg)
 
     k = cv2.waitKey(1)
