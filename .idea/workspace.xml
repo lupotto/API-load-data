@@ -2,6 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f9ecab2f-4f93-47c2-91e9-648155ea4987" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Class stadistics.png" beforeDir="false" afterPath="$PROJECT_DIR$/Class stadistics.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -12,23 +14,24 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/yolov3_pytorch$main.coverage" NAME="main Coverage Results" MODIFIED="1524959396706" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/yolov3_pytorch$main.coverage" NAME="main Coverage Results" MODIFIED="1525124875216" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file leaf-file-name="main.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="379">
-              <caret line="129" lean-forward="true" selection-start-line="129" selection-end-line="129" />
+            <state relative-caret-position="540">
+              <caret line="147" selection-start-line="147" selection-end-line="147" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
-                <element signature="e#279#914#0" />
-                <element signature="e#641#811#0" />
-                <element signature="e#1185#3634#0" />
-                <element signature="e#3959#4086#0" />
-                <element signature="e#4019#4346#0" />
-                <element signature="e#5235#5687#0" />
+                <element signature="e#346#1001#0" />
+                <element signature="e#3985#4070#0" />
+                <element signature="e#4019#4814#0" />
+                <element signature="e#5022#6203#0" />
+                <element signature="e#4343#4474#0" />
+                <element signature="e#4525#4852#0" />
+                <element signature="e#5738#6190#0" />
               </folding>
             </state>
           </provider>
@@ -49,6 +52,7 @@
     </findStrings>
     <replaceStrings>
       <replace>self.Object.name</replace>
+      <replace>image[i].classes</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -82,6 +86,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -93,7 +98,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -155,7 +159,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="-4" width="1680" height="1054" extended-state="6" />
+    <frame x="-1" y="-11" width="1682" height="1062" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -163,13 +167,12 @@
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Python Console" order="7" weight="0.32875264" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.9059524" visible="true" weight="0.34249473" />
+      <window_info active="true" anchor="bottom" x="0" y="358" width="1680" height="324" id="Run" order="2" sideWeight="0.9059524" visible="true" weight="0.34249473" />
       <window_info anchor="bottom" id="Terminal" order="7" />
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.24940476" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="right" id="Database" order="3" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.32980973" />
-      <window_info anchor="right" id="SciView" order="3" weight="0.3297619" />
+      <window_info anchor="right" x="1774" y="105" width="788" height="711" id="SciView" order="3" type="WINDOWED" weight="0.3297619" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39978904" />
@@ -179,6 +182,7 @@
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32980973" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -189,22 +193,40 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="5" />
+      <option name="time" value="9" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1860">
+          <caret line="124" selection-start-line="124" selection-end-line="124" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+            <element signature="e#346#1001#0" />
+            <element signature="e#3985#4070#0" />
+            <element signature="e#4019#4814#0" />
+            <element signature="e#5022#6203#0" />
+            <element signature="e#4343#4474#0" />
+            <element signature="e#4525#4852#0" />
+            <element signature="e#5738#6190#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2145">
           <caret line="143" lean-forward="true" selection-start-line="143" selection-end-line="143" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
-            <element signature="e#279#914#0" />
-            <element signature="e#641#811#0" />
-            <element signature="e#1185#3634#0" />
-            <element signature="e#3959#4086#0" />
-            <element signature="e#4019#4346#0" />
-            <element signature="e#5235#5687#0" />
+            <element signature="e#346#1001#0" />
+            <element signature="e#3985#4070#0" />
+            <element signature="e#4019#4814#0" />
+            <element signature="e#5022#6203#0" />
+            <element signature="e#4343#4474#0" />
+            <element signature="e#4525#4852#0" />
+            <element signature="e#5738#6190#0" />
           </folding>
         </state>
       </provider>
@@ -215,12 +237,13 @@
           <caret line="46" column="38" lean-forward="true" selection-start-line="46" selection-start-column="38" selection-end-line="46" selection-end-column="38" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
-            <element signature="e#279#914#0" />
-            <element signature="e#641#811#0" />
-            <element signature="e#1185#3634#0" />
-            <element signature="e#3959#4086#0" />
-            <element signature="e#4019#4346#0" />
-            <element signature="e#5235#5687#0" />
+            <element signature="e#346#1001#0" />
+            <element signature="e#3985#4070#0" />
+            <element signature="e#4019#4814#0" />
+            <element signature="e#5022#6203#0" />
+            <element signature="e#4343#4474#0" />
+            <element signature="e#4525#4852#0" />
+            <element signature="e#5738#6190#0" />
           </folding>
         </state>
       </provider>
@@ -232,28 +255,20 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/mySavedDict.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="30" lean-forward="true" selection-start-column="30" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Class stadistics.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
+    <entry file="file://$PROJECT_DIR$/mySavedDict.txt" />
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="379">
-          <caret line="129" lean-forward="true" selection-start-line="129" selection-end-line="129" />
+        <state relative-caret-position="540">
+          <caret line="147" selection-start-line="147" selection-end-line="147" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
-            <element signature="e#279#914#0" />
-            <element signature="e#641#811#0" />
-            <element signature="e#1185#3634#0" />
-            <element signature="e#3959#4086#0" />
-            <element signature="e#4019#4346#0" />
-            <element signature="e#5235#5687#0" />
+            <element signature="e#346#1001#0" />
+            <element signature="e#3985#4070#0" />
+            <element signature="e#4019#4814#0" />
+            <element signature="e#5022#6203#0" />
+            <element signature="e#4343#4474#0" />
+            <element signature="e#4525#4852#0" />
+            <element signature="e#5738#6190#0" />
           </folding>
         </state>
       </provider>

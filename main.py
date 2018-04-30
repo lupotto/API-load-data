@@ -11,6 +11,8 @@ import os
 from os.path import isfile
 import cv2
 import pickle
+from matplotlib import colors
+from matplotlib.ticker import PercentFormatter
 import pandas
 from collections import Counter
 
@@ -46,7 +48,18 @@ class Image(object):
         self.data = data
         self.classes = classes
 
+    def has_dimensions(self):
 
+        dimensions = self.data.shape
+        if dimensions[0] == 720 and dimensions[1] == 1280 and dimensions[2] == 3:
+            return 1
+        return 0
+
+    def get_classes_names(self):
+        list_names = []
+        for i in range(len(self.classes)):
+            list_names.append(self.classes[i].name)
+        return list_names
 
 def loadDataset(DATA_LOCATION):
     main_path = os.path.join(os.path.expanduser('~'), DATA_LOCATION, 'AutelData')
@@ -58,8 +71,15 @@ def loadDataset(DATA_LOCATION):
     #stadistics dicts
     areas = {}
     times = {}
+    with open("times.txt", "rb") as myFile:
+        times = pickle.load(myFile)
+    times.pop('200',None)
 
-    test = 0
+    class_areas = [[] for x in range(len(times.keys()))]
+
+    test = np.zeros((720,1280,3))
+    print(test.shape)
+
     # 1st level  #FOLDER IS 1ST BRANCH
     for folder in main_folders:
         #os.makedirs(os.path.join(out_path,folder))
@@ -78,6 +98,7 @@ def loadDataset(DATA_LOCATION):
                     jpg_folder = re.split('[_.]', id)[0]
                     jpg_img = re.split('[_.]', id)[1]
                     data = cv2.imread(os.path.join(main_path, folder, subfolder, id))
+
 
                 if (id.endswith('.xml')):
 
@@ -101,15 +122,50 @@ def loadDataset(DATA_LOCATION):
                     if jpg_folder == xml_folder and jpg_img == xml_img:
 
                         img = Image(jpg_folder, jpg_img, data, classes)
-                        count_classes_areas(img,areas,times)
+                        if not img.has_dimensions():
+                            img_wrong_jpg = os.path.join('~/AutelData', folder, subfolder, img.idFolder + "_" + img.numImg + ".jpg")
+                            img_wrong_xml = os.path.join(os.path.join('~/AutelData',folder, subfolder, id))
 
-                        new_img = printBoundingBoxes(img)
+                            string_img_wrong(img_wrong_jpg,img_wrong_xml,img)
+
+
+                        #count_classes_areas(img,areas,times)
+                        #count_areas(img,class_areas,times)
+
+                       #new_img = printBoundingBoxes(img)
 
                         #print(os.path.join(out_path, folder, subfolder, img.idFolder +"_"+ img.numImg + ".jpg"),
                         #   new_img)
                         #cv2.imwrite(os.path.join(out_path, folder, subfolder, img.idFolder+"_"+img.numImg+".jpg"),new_img)
-
+    #createList(class_areas)
     #createDicts(areas,times)
+
+
+#def string_img_wrong(img_wrong_jpg, img_wrong_xml,img):
+
+
+
+def createList(class_areas):
+    with open("class_areas.txt", "wb") as fp:  # Pickling
+        pickle.dump(class_areas, fp)
+
+def count_areas(image,class_areas,times):
+    # 0.Car 1.Person 2.Vehicle 3.Rider 4.Boat 5.Animal
+    for i in range(len(image.classes)):
+        if image.classes[i].name == 'Car':
+            class_areas[0].append(image.classes[i].getArea())
+        elif image.classes[i].name == 'Person':
+            class_areas[1].append(image.classes[i].getArea())
+        elif image.classes[i].name == 'Vehicle':
+            class_areas[2].append(image.classes[i].getArea())
+        elif image.classes[i].name == 'Rider':
+            class_areas[3].append(image.classes[i].getArea())
+        elif image.classes[i].name == 'Boat':
+            class_areas[4].append(image.classes[i].getArea())
+        elif image.classes[i].name == 'Animal':
+            class_areas[5].append(image.classes[i].getArea())
+        else:
+            print("class not found")
 
 def createHistogram():
 
@@ -119,24 +175,67 @@ def createHistogram():
     with open("times.txt", "rb") as myFile:
         times = pickle.load(myFile)
 
+    with open("class_areas.txt","rb") as f:
+        class_areas = pickle.load(f)
+
+
     areas.pop('200',None)
     times.pop('200',None)
 
-    
+    print(len(areas.keys()))
+    n_bins = 2000
+    #fig, axs = plt.subplots(1, 2, figsize=(9, 4),tight_layout = True)
+    #axs[0].hist(class_areas[1],bins=50)
 
+    num_classes = len(areas.keys())
+
+    for i in range(num_classes):
+        fig, ax = plt.subplots()
+        N, bins, paches = ax.hist(class_areas[i], bins=n_bins)
+        plt.xlim([0, 50000])
+        start, end = ax.get_xlim()
+        ax.xaxis.set_ticks(np.arange(start, end, 5000))
+        plt.xlabel('Area BBox')
+        plt.ylabel('Num Times')
+        if i == 0:
+            plt.title('Car')
+            plt.savefig('histograms/Car')
+        if i == 1:
+            plt.title('Person')
+            plt.savefig('histograms/Person')
+        if i == 2:
+            plt.title('Vehicle')
+            plt.savefig('histograms/Vehicle')
+        if i == 3:
+            plt.title('Rider')
+            plt.savefig('histograms/Rider')
+        if i == 4:
+            plt.title('Boat')
+            plt.savefig('histograms/Boat')
+        if i == 5:
+            plt.title('Animal')
+            plt.savefig('histograms/Animal')
+
+        plt.show()
+
+
+
+    '''
     names = list(areas.keys())
-    pixel_values = list(areas.values())
-    times_values = list(times.values())
-
+    pixel_values = np.array(list(areas.values()))
+    times_values = np.array(list(times.values()))
+    print(pixel_values)
+    print(times_values)
     fig, axs = plt.subplots(1,2 , figsize=(9, 4))
 
     total = pixel_values/times_values
     axs[0].bar(names, total)
     axs[1].bar(names,times_values)
-    axs[0].set_title('Pixels')
-    axs[1].set_title('Times')
+    axs[0].set_title('Pixels / Count')
+    axs[1].set_title('Count')
     plt.savefig('Class stadistics')
     plt.show()
+    '''
 
 def createDicts(areas,times):
 
@@ -169,8 +268,6 @@ def printBoundingBoxes(image):
 
         newimg = cv2.putText(bbox, image.classes[i].name, (image.classes[i].xmin - 5, image.classes[i].ymin - 5), font,
                              fontScale, font_color, lineType)
-
-
         #print("Num {} {}: Area: {}".format(image.classes[i].name,i,area))
 
    # print(area)
@@ -204,9 +301,9 @@ def setColor(name):
 
     return font_color
 
-
 if __name__ == '__main__':
 
 
-    #loadDataset('resources')
-    createHistogram()
+    loadDataset('resources')
+
+    #createHistogram()
