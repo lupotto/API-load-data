@@ -11,11 +11,12 @@ import os
 from os.path import isfile
 import cv2
 import pickle
+import csv
 from matplotlib import colors
 from matplotlib.ticker import PercentFormatter
 import pandas
 from collections import Counter
-
+from auteltools import auteldata as ad
 
 DATA_LOCATION = 'resources'
 
@@ -71,15 +72,16 @@ def loadDataset(DATA_LOCATION):
     #stadistics dicts
     areas = {}
     times = {}
-    with open("times.txt", "rb") as myFile:
-        times = pickle.load(myFile)
-    times.pop('200',None)
+    #with open("times.txt", "rb") as myFile:
+      #  times = pickle.load(myFile)
+    #times.pop('200',None)
 
-    class_areas = [[] for x in range(len(times.keys()))]
+    #lass_areas = [[] for x in range(len(times.keys()))]
 
     test = np.zeros((720,1280,3))
-    print(test.shape)
-
+    array_string = []
+    flag = 0
+    pkl_imgs = []
     # 1st level  #FOLDER IS 1ST BRANCH
     for folder in main_folders:
         #os.makedirs(os.path.join(out_path,folder))
@@ -97,9 +99,10 @@ def loadDataset(DATA_LOCATION):
                 if (id.endswith('.jpg')):
                     jpg_folder = re.split('[_.]', id)[0]
                     jpg_img = re.split('[_.]', id)[1]
-                    data = cv2.imread(os.path.join(main_path, folder, subfolder, id))
+                    flag += 1
+                    #data = cv2.imread(os.path.join(main_path, folder, subfolder, id))
 
-
+    '''
                 if (id.endswith('.xml')):
 
                     xml_folder = re.split('[_.]', id)[0]
@@ -118,32 +121,29 @@ def loadDataset(DATA_LOCATION):
                         xmax = int(objects[i].find('bndbox').find('xmax').text)
                         ymax = int(objects[i].find('bndbox').find('ymax').text)
                         classes.append(Object(name, xmin, ymin, xmax, ymax))
-
+  
                     if jpg_folder == xml_folder and jpg_img == xml_img:
 
                         img = Image(jpg_folder, jpg_img, data, classes)
+
                         if not img.has_dimensions():
-                            img_wrong_jpg = os.path.join('~/AutelData', folder, subfolder, img.idFolder + "_" + img.numImg + ".jpg")
-                            img_wrong_xml = os.path.join(os.path.join('~/AutelData',folder, subfolder, id))
+                            flag = 1
+                            img_wrong_jpg = os.path.join('~/AutelData', folder, subfolder)
+                        else:
+                            pkl_imgs.append(img)
 
-                            string_img_wrong(img_wrong_jpg,img_wrong_xml,img)
+    with open('wrong_shapes.csv', 'w') as f:
+        for line in range(len(array_string)):
+            f.write(array_string[line])
+            f.write('\n')
+    '''
+    print(flag)
+def string_img_wrong(img_wrong_jpg,img,array_string):
 
-
-                        #count_classes_areas(img,areas,times)
-                        #count_areas(img,class_areas,times)
-
-                       #new_img = printBoundingBoxes(img)
-
-                        #print(os.path.join(out_path, folder, subfolder, img.idFolder +"_"+ img.numImg + ".jpg"),
-                        #   new_img)
-                        #cv2.imwrite(os.path.join(out_path, folder, subfolder, img.idFolder+"_"+img.numImg+".jpg"),new_img)
-    #createList(class_areas)
-    #createDicts(areas,times)
-
-
-#def string_img_wrong(img_wrong_jpg, img_wrong_xml,img):
-
-
+    class_names = img.get_classes_names()
+    string = "Class/es: {}  Shape: {} Path: {}".format(class_names, img.data.shape, img_wrong_jpg)
+    array_string.append(string)
+    print(string)
 
 def createList(class_areas):
     with open("class_areas.txt", "wb") as fp:  # Pickling
@@ -303,7 +303,9 @@ def setColor(name):
 
 if __name__ == '__main__':
 
-
-    loadDataset('resources')
+    #loadDataset('resources')
 
     #createHistogram()
+
+    dataset = ad.Autel('resources', read_all_data=True)
+
