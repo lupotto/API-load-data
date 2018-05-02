@@ -1,6 +1,4 @@
 import numpy as np
-import skimage
-import skimage.io as io
 import io
 from io import BytesIO
 import matplotlib.pyplot as plt
@@ -14,7 +12,6 @@ import pickle
 import csv
 from matplotlib import colors
 from matplotlib.ticker import PercentFormatter
-import pandas
 from collections import Counter
 from auteltools import auteldata as ad
 

@@ -7,7 +7,8 @@ import os
 from os.path import isfile
 import cv2
 import pickle
-
+import pandas as pd
+from collections import defaultdict
 
 #TODO:
 
@@ -39,6 +40,13 @@ class Annotation(object):
         for i in range(len(self.labels)):
             print(self.labels[i].show_values())
 
+    def get_labels_name(self):
+        names_labels = []
+        for i in range(len(self.labels)):
+            names_labels.append(self.labels[i].name)
+
+        return names_labels
+
 class Label(object):
     def __init__(self, label_name, xmin, ymin, xmax, ymax):
         """
@@ -56,6 +64,9 @@ class Label(object):
         self.xmax = xmax
         self.ymax = ymax
 
+    def get_name(self):
+        return self.label_name
+
     def show_values(self):
 
         print("Label name: {}".format(self.label_name))
@@ -63,24 +74,32 @@ class Label(object):
         print("Ymax: {} Ymin: {} Ymax - Ymin: {}".format(self.ymax, self.ymin, self.ymax - self.ymin))
 
 class Autel:
-    def __init__(self, data_location, read_all_data = False):
+    def __init__(self, data_location, read_all_data = False, batch_size = 1):
         """
         Constructor of Autel helper class for reading images and annotations
         :param data_location (str): location of folder data
         :return:
         """
+        self.batch_size = batch_size
         self.data_location = data_location
         self.img_dict = dict()
+        self.img_wrong = defaultdict(list)
 
         if read_all_data:
             self.load_data()
+
+            if bool(self.img_wrong):
+                df = pd.DataFrame(self.img_wrong,
+                                  columns=['image_name', 'path', 'shape', 'labels'])
+                df.to_csv(os.path.join(os.path.expanduser('~'), 'outAutelData',
+                                            'csv_wrong', 'images_wrong_2.csv'))
 
 
     def load_data(self):
 
         main_path = os.path.join(os.path.expanduser('~'), self.data_location, 'AutelData')
 
-        self.boolean = 0
+
         for root,dirs,files in os.walk(main_path, topdown=False):
             files.sort()
             for name_file in files:
@@ -88,15 +107,17 @@ class Autel:
                     self.img_dict[name_file] = os.path.join(root, name_file)
 
                 elif name_file.endswith('.xml'):
-                    annotation = self.load_annotation(root, name_file, self.boolean)
-                    annotation.show_annotation()
+                    annotation = self.load_annotation(root, name_file)
 
-    def load_annotation(self, root, name_xml, boolean):
+
+    def load_annotation(self, root, name_xml):
 
         tree = ET.parse(os.path.join(root, name_xml))
         root = tree.getroot()
         name_jpg = root.find('filename').text
 
+        aux = 0
+        annotation = 0
         if name_jpg in self.img_dict:
             path_file = self.img_dict[name_jpg]
             width = root.find('size').find('width').text
@@ -105,23 +126,51 @@ class Autel:
 
             if self.check_sizes(int(width), int(height), int(depth)):
                 labels = self.parse_labels(root)
-                annotation = Annotation(name_jpg,path_file,width,height,depth,labels)
-                return annotation
-            #TODO: else create csv with incorrect weights and prompt error
+                if len(labels)> 5:
+                    print(self.img_dict[name_jpg])
+                annotation = Annotation(name_jpg, path_file, width, height, depth, labels)
+            else:
+                #print("Image {} with incorrect shape: ({},{},{})".format(name_jpg,width,height,depth))
+                self.generate_dict_wrong_image(name_jpg, path_file,
+                                                int(width), int(height), int(depth), root)
+
         else:
             #TODO: create prompt error
-            self.boolean += 1
 
+            aux += 1
 
+        return annotation
 
+    def generate_dict_wrong_image(self, name_jpg, path_file, width, height, depth, root):
+        self.img_wrong['image_name'].append(name_jpg)
+        self.img_wrong['path'].append(path_file)
+        self.img_wrong['shape'].append("({},{},{})".format(int(width), int(height), int(depth)))
+        labels = self.parse_labels(root)
+        names = []
+        for i in range(len(labels)):
+            names.append(labels[i].get_name())
+
+        labels = "/".join(map(str, names))
+        self.img_wrong['labels'].append(labels)
 
     def check_sizes(self, width, height, depth):
+        """
+        Function for verifiy the size of the images
+        :param width (int):
+        :param height (int):
+        :param depth (int):
+        :return: boolean
+        """
         if width == 1280 and height == 720 and depth == 3:
             return True
         return False
 
     def parse_labels(self, root):
-
+        """
+        Function that parse all the labels of the xml file
+        :param root:
+        :return:
+        """
         objects = root.findall('object')
         array_labels = []
         for i in range(len(objects)):
