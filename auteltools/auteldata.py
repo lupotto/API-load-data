@@ -10,8 +10,11 @@ import pickle
 import pandas as pd
 from collections import defaultdict
 
-#TODO:
-
+#TODO 2: Create .pkl
+#TODO 3: Without .pkl
+#TODO 4: Batch size
+#TODO 5: Update
+#TODO 6: Show stadistics
 
 class Annotation(object):
     def __init__(self, file_name, path_file, width, height, depth, labels):
@@ -126,8 +129,6 @@ class Autel:
 
             if self.check_sizes(int(width), int(height), int(depth)):
                 labels = self.parse_labels(root)
-                if len(labels)> 5:
-                    print(self.img_dict[name_jpg])
                 annotation = Annotation(name_jpg, path_file, width, height, depth, labels)
             else:
                 #print("Image {} with incorrect shape: ({},{},{})".format(name_jpg,width,height,depth))
@@ -135,7 +136,7 @@ class Autel:
                                                 int(width), int(height), int(depth), root)
 
         else:
-            #TODO: create prompt error
+            #TODO 1: create prompt error
 
             aux += 1
 
